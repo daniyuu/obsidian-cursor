@@ -1,0 +1,11 @@
+{
+	"id": "obsidian-cursor",
+	"name": "Obsidian Cursor",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Obsidian plugin, like Cursor IDE, but for Obsidian.",
+	"author": "Kagura Chen",
+	"authorUrl": "https://github.com/daniyuu",
+	"fundingUrl": "https://obsidian.md/pricing",
+	"isDesktopOnly": false
+}
