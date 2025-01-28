@@ -55,16 +55,6 @@ export default class HelloWorldPlugin extends Plugin {
 			  editor.setValue(currentContent + '\n\n' + summary);
 			},
 		  });
-		// This adds a command to insert today's date
-		this.addCommand({
-			id: 'insert-current-date',
-			name: 'Insert current date',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				const today = new Date();
-				const formattedDate = today.toISOString().split('T')[0];
-				editor.replaceSelection(formattedDate);
-			}
-		});
 		// This adds a complex command that can check whether the current state of the app allows execution of the command
 		this.addCommand({
 			id: 'open-sample-modal-complex',
