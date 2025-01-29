@@ -22,12 +22,12 @@ export default class CursorPlugin extends Plugin {
 			id: 'weekly-summary',
 			name: 'Create Weekly Summary',
 			editorCallback: (editor: Editor) => {
-			  const selection = editor.getSelection();
-			  const summary = `# Weekly Summary\n\nthis is a summary of the week: ${selection}`;
-			  const currentContent = editor.getValue();
-			  editor.setValue(currentContent + '\n\n' + summary);
+				const selection = editor.getSelection();
+				const cursor = editor.getCursor();
+				const summary = `# Weekly Summary\n\nThis is a summary of the week:\n\n${selection}`;
+				editor.replaceRange(summary, cursor);
 			},
-		  });
+		});
 	}
 
 	onunload() {
