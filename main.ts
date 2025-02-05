@@ -21,7 +21,6 @@ export default class CursorPlugin extends Plugin {
 			name: "Create Weekly Summary",
 			editorCallback: async (editor: Editor) => {
 				const selection = editor.getSelection();
-
 				const language = "zh";
 
 				const languagePrompt =
@@ -54,7 +53,7 @@ ${languagePrompt}
 Here's the content to analyze:
 ${selection}`;
 
-				const completion = await this.getCpmpletionV2(prompt);
+				const completion = await this.getCompletionV2(prompt);
 
 				// Create a popup window with the summary and Accept/Reject buttons
 				const popup = document.createElement("div");
@@ -175,7 +174,7 @@ ${selection}`;
 		}
 	}
 
-	async getCpmpletionV2(prompt: string): Promise<string> {
+	async getCompletionV2(prompt: string): Promise<string> {
 		const endpoint = "http://127.0.0.1:8000/complete"; // 确保 IP 地址格式正确
 		const headers = {
 			"Content-Type": "application/json",
