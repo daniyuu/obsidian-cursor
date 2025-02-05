@@ -25,10 +25,18 @@ export default class CursorPlugin extends Plugin {
 				new SummaryPopup(
 					completion,
 					editor,
+					async () => {
+						const newCompletion = await this.regenerateSummary(prompt);
+						return newCompletion;
+					},
 					() => {}
 				).show();
 			},
 		});
+	}
+
+	private async regenerateSummary(prompt: string): Promise<string> {
+		return await this.apiService.getCompletion(prompt);
 	}
 
 	onunload() {

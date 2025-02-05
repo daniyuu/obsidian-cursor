@@ -6,6 +6,7 @@ export class SummaryPopup {
     constructor(
         private completion: string,
         private editor: Editor,
+        private onRegenerate: () => Promise<string>,
         private onClose: () => void
     ) {
         this.popup = this.createPopup();
@@ -24,9 +25,11 @@ export class SummaryPopup {
 
         const acceptButton = this.createButton("Accept", () => this.handleAccept());
         const rejectButton = this.createButton("Reject", () => this.handleReject());
+        const regenerateButton = this.createButton("Regenerate", () => this.handleRegenerate());
 
         buttonContainer.appendChild(acceptButton);
         buttonContainer.appendChild(rejectButton);
+        buttonContainer.appendChild(regenerateButton);
         popup.appendChild(buttonContainer);
 
         return popup;
@@ -49,6 +52,14 @@ export class SummaryPopup {
         this.close();
     }
 
+    private async handleRegenerate() {
+        this.completion = await this.onRegenerate();
+        const summaryElement = this.popup.querySelector("pre");
+        if (summaryElement) {
+            summaryElement.textContent = this.completion;
+        }
+    }
+
     show() {
         document.body.appendChild(this.popup);
     }
@@ -57,4 +68,4 @@ export class SummaryPopup {
         document.body.removeChild(this.popup);
         this.onClose();
     }
-} 
+}
