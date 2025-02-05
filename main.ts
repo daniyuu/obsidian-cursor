@@ -22,11 +22,40 @@ export default class CursorPlugin extends Plugin {
 			name: 'Create Weekly Summary',
 			editorCallback: async (editor: Editor) => {
 				const selection = editor.getSelection();
-				const cursor = editor.getCursor();
-				const summary = `# Weekly Summary\n\nThis is a summary of the week:\n\n${selection}`;
-				// editor.replaceRange(summary, cursor);
-				const completion = await this.getCpmpletionV2(summary);
-				editor.replaceRange(completion, cursor);
+
+				const language = 'zh';
+				
+				const languagePrompt = language === 'zh' 
+			? "Please write the summary in Chinese (use Chinese punctuation)."
+			: "Please write the summary in English.";
+		
+		const prompt = `Based on the following content, create a structured weekly summary in markdown format.
+Include:
+1. A header with the week number
+2. Main accomplishments with bullet points and sub-points
+3. A summary section with effectiveness, improvements, and next steps
+
+${languagePrompt} Make it clear and actionable.
+Here's the content to summarize:
+${selection}`;
+
+				const completion = await this.getCpmpletionV2(prompt);
+				
+				// Get the end position of the selection
+				const to = editor.getCursor('to');
+				
+				// Add two newlines before the summary
+				const summaryText = `\n\n${completion}`;
+				
+				// Insert the summary after the selection
+				editor.replaceRange(summaryText, to);
+				
+				// Optional: Move cursor to the end of the inserted summary
+				const newCursorPos = {
+					line: to.line + summaryText.split('\n').length,
+					ch: 0
+				};
+				editor.setCursor(newCursorPos);
 			},
 		});
 	}
@@ -102,16 +131,14 @@ export default class CursorPlugin extends Plugin {
 		}
 	}
 
-	async getCpmpletionV2(prompt: string): Promise<string>{
-		const endpoint = "http://localhost:8000/complete";
+	async getCpmpletionV2(prompt: string): Promise<string> {
+		const endpoint = "http://127.0.0.1:8000/complete"; // 确保 IP 地址格式正确
 		const headers = {
 			"Content-Type": "application/json"
 		};
 
 		const body = JSON.stringify({
-			messages: [
-				{ role: "user", content: "I am going to Paris, what should I see?" }
-			],
+			messages: [{ role: "user", content: prompt }],
 			max_tokens: 2048
 		});
 
@@ -119,10 +146,12 @@ export default class CursorPlugin extends Plugin {
 			const response = await fetch(endpoint, {
 				method: "POST",
 				headers,
-				body
+				body,
+				mode: "cors"  // 确保使用 CORS 模式
 			});
 			const data = await response.json();
 			console.log("Response:", data);
+			return data.content;
 		} catch (error) {
 			console.error("Error fetching chat completion:", error);
 		}
@@ -151,5 +180,6 @@ export default class CursorPlugin extends Plugin {
 		return data.choices.map((c: any) => c.text.trim());
 
 	}
+
 
 }
