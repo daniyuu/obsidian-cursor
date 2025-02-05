@@ -30,47 +30,64 @@ export default class CursorPlugin extends Plugin {
 						: "Please write the summary in English, focusing on concrete outcomes, challenges, and next steps. Avoid fluff and redundant details. Highlight impact and value.";
 
 				const prompt = `Create an effective weekly work summary that captures key accomplishments, challenges, and insights concisely.  
-				Focus on **real impact** rather than listing tasks. **Avoid generic statements and unnecessary verbosity**.
+Focus on **real impact** rather than listing tasks. **Avoid generic statements and unnecessary verbosity**.
 
-				If the content includes a specific week number, begin with:
-				### YYYY - Week N
-				(e.g., "### 2025 - Week 4")  
-				Otherwise, omit this header.
+If the content includes a specific week number, begin with:
+### YYYY - Week N
+(e.g., "### 2025 - Week 4")  
+Otherwise, omit this header.
 
-				**Structure:**
-				1. Start with "主要完成事项："  
-				2. **Summarize key accomplishments with tangible impact:**  
-				- Use numbered points (1., 2., 3.)  
-				- Include **only meaningful, high-impact work**  
-				- Avoid unnecessary details—focus on the **why** and **results**  
-				- Use **bold (**) to emphasize critical terms, projects, or metrics  
-				3. End with a short summary with three sections:
-				- **成效：** (What measurable results were achieved?)
-				- **改进：** (What challenges or lessons were identified?)
-				- **后续重点：** (What are the next critical actions?)
+**Structure:**
+1. Start with "主要完成事项："  
+2. **Summarize key accomplishments with tangible impact:**  
+- Use numbered points (1., 2., 3.)  
+- Include **only meaningful, high-impact work**  
+- Avoid unnecessary details—focus on the **why** and **results**  
+- Use **bold (**) to emphasize critical terms, projects, or metrics  
+3. End with a short summary with three sections:
+- **成效：** (What measurable results were achieved?)
+- **改进：** (What challenges or lessons were identified?)
+- **后续重点：** (What are the next critical actions?)
 
-				${languagePrompt}
+${languagePrompt}
 
-				Here's the content to analyze:
-				${selection}`;
+Here's the content to analyze:
+${selection}`;
 
 				const completion = await this.getCpmpletionV2(prompt);
 
-				// Get the end position of the selection
-				const to = editor.getCursor("to");
+				// Create a popup window with the summary and Accept/Reject buttons
+				const popup = document.createElement("div");
+				popup.style.position = "fixed";
+				popup.style.top = "50%";
+				popup.style.left = "50%";
+				popup.style.transform = "translate(-50%, -50%)";
+				popup.style.backgroundColor = "white";
+				popup.style.padding = "20px";
+				popup.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.5)";
+				popup.style.zIndex = "1000";
 
-				// Add two newlines before the summary
-				const summaryText = `\n\n${completion}`;
+				const summaryText = document.createElement("pre");
+				summaryText.textContent = completion;
+				popup.appendChild(summaryText);
 
-				// Insert the summary after the selection
-				editor.replaceRange(summaryText, to);
-
-				// Optional: Move cursor to the end of the inserted summary
-				const newCursorPos = {
-					line: to.line + summaryText.split("\n").length,
-					ch: 0,
+				const acceptButton = document.createElement("button");
+				acceptButton.textContent = "Accept";
+				acceptButton.onclick = () => {
+					const to = editor.getCursor("to");
+					editor.replaceRange(`\n\n${completion}`, to);
+					document.body.removeChild(popup);
 				};
-				editor.setCursor(newCursorPos);
+				popup.appendChild(acceptButton);
+
+				const rejectButton = document.createElement("button");
+				rejectButton.textContent = "Reject";
+				rejectButton.onclick = () => {
+					document.body.removeChild(popup);
+				};
+				popup.appendChild(rejectButton);
+
+				document.body.appendChild(popup);
 			},
 		});
 	}
