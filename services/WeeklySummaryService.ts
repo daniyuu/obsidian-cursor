@@ -1,0 +1,38 @@
+export class WeeklySummaryService {
+    constructor(private language: string = 'zh') {}
+
+    getPrompt(selection: string): string {
+        const languagePrompt = this.getLanguagePrompt();
+
+        return `Create an effective weekly work summary that captures key accomplishments, challenges, and insights concisely.  
+Focus on **real impact** rather than listing tasks. **Avoid generic statements and unnecessary verbosity**.
+
+If the content includes a specific week number, begin with:
+### YYYY - Week N
+(e.g., "### 2025 - Week 4")  
+Otherwise, omit this header.
+
+**Structure:**
+1. Start with "主要完成事项："  
+2. **Summarize key accomplishments with tangible impact:**  
+- Use numbered points (1., 2., 3.)  
+- Include **only meaningful, high-impact work**  
+- Avoid unnecessary details—focus on the **why** and **results**  
+- Use **bold (**) to emphasize critical terms, projects, or metrics  
+3. End with a short summary with three sections:
+- **成效：** (What measurable results were achieved?)
+- **改进：** (What challenges or lessons were identified?)
+- **后续重点：** (What are the next critical actions?)
+
+${languagePrompt}
+
+Here's the content to analyze:
+${selection}`;
+    }
+
+    private getLanguagePrompt(): string {
+        return this.language === "zh"
+            ? "请用中文（使用中文标点）创建一个简洁、高效、有价值的工作周报。避免冗长、空洞的描述，聚焦**实际成果**、**关键挑战**和**下一步行动**。不简单罗列工作内容，而是突出影响和价值。使用'主要完成事项：'作为主要部分的标题。"
+            : "Please write the summary in English, focusing on concrete outcomes, challenges, and next steps. Avoid fluff and redundant details. Highlight impact and value.";
+    }
+} 
