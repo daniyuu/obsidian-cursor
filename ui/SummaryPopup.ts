@@ -1,15 +1,37 @@
 import { Editor } from "obsidian";
+import { AIAgent } from "../agents/AIAgent";
 
 export class SummaryPopup {
     private popup: HTMLDivElement;
+    private aiAgent: AIAgent;
+    private completion: string;
 
     constructor(
-        private completion: string,
+        private selectedText: string,
         private editor: Editor,
-        private onRegenerate: () => Promise<string>,
         private onClose: () => void
     ) {
+        this.aiAgent = new AIAgent();
         this.popup = this.createPopup();
+        this.generateInitialSummary();
+    }
+
+    private async generateInitialSummary() {
+        const summaryElement = this.popup.querySelector("pre");
+        if (summaryElement) {
+            summaryElement.textContent = "Generating summary...";
+        }
+        
+        try {
+            this.completion = await this.aiAgent.generateWeeklySummary(this.selectedText);
+            if (summaryElement) {
+                summaryElement.textContent = this.completion;
+            }
+        } catch (error) {
+            if (summaryElement) {
+                summaryElement.textContent = "Error generating summary. Please try again.";
+            }
+        }
     }
 
     private createPopup(): HTMLDivElement {
@@ -53,10 +75,20 @@ export class SummaryPopup {
     }
 
     private async handleRegenerate() {
-        this.completion = await this.onRegenerate();
         const summaryElement = this.popup.querySelector("pre");
         if (summaryElement) {
-            summaryElement.textContent = this.completion;
+            summaryElement.textContent = "Regenerating summary...";
+        }
+        
+        try {
+            this.completion = await this.aiAgent.generateWeeklySummary(this.selectedText);
+            if (summaryElement) {
+                summaryElement.textContent = this.completion;
+            }
+        } catch (error) {
+            if (summaryElement) {
+                summaryElement.textContent = "Error regenerating summary. Please try again.";
+            }
         }
     }
 
