@@ -7,7 +7,7 @@ If your plugin does not need CSS, delete this file.
 
 */
 
-.summary-popup {
+.weekly-summary-panel {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -19,14 +19,14 @@ If your plugin does not need CSS, delete this file.
     border-radius: 8px;
 }
 
-.summary-popup .button-container {
+.weekly-summary-panel .button-container {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 16px;
 }
 
-.summary-popup button {
+.weekly-summary-panel button {
     padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;

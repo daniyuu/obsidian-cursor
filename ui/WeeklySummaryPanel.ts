@@ -1,8 +1,8 @@
 import { Editor } from "obsidian";
 import { AIAgent } from "../agents/AIAgent";
 
-export class SummaryPopup {
-    private popup: HTMLDivElement;
+export class WeeklySummaryPanel {
+    private panel: HTMLDivElement;
     private aiAgent: AIAgent;
     private completion: string;
 
@@ -12,12 +12,12 @@ export class SummaryPopup {
         private onClose: () => void
     ) {
         this.aiAgent = new AIAgent();
-        this.popup = this.createPopup();
+        this.panel = this.createPanel();
         this.generateInitialSummary();
     }
 
     private async generateInitialSummary() {
-        const summaryElement = this.popup.querySelector("pre");
+        const summaryElement = this.panel.querySelector("pre");
         if (summaryElement) {
             summaryElement.textContent = "Generating summary...";
         }
@@ -34,13 +34,13 @@ export class SummaryPopup {
         }
     }
 
-    private createPopup(): HTMLDivElement {
-        const popup = document.createElement("div");
-        popup.addClasses(["summary-popup"]);
+    private createPanel(): HTMLDivElement {
+        const panel = document.createElement("div");
+        panel.addClasses(["weekly-summary-panel"]);
         
         const summaryText = document.createElement("pre");
         summaryText.textContent = this.completion;
-        popup.appendChild(summaryText);
+        panel.appendChild(summaryText);
 
         const buttonContainer = document.createElement("div");
         buttonContainer.addClass("button-container");
@@ -52,9 +52,9 @@ export class SummaryPopup {
         buttonContainer.appendChild(acceptButton);
         buttonContainer.appendChild(rejectButton);
         buttonContainer.appendChild(regenerateButton);
-        popup.appendChild(buttonContainer);
+        panel.appendChild(buttonContainer);
 
-        return popup;
+        return panel;
     }
 
     private createButton(text: string, onClick: () => void): HTMLButtonElement {
@@ -75,7 +75,7 @@ export class SummaryPopup {
     }
 
     private async handleRegenerate() {
-        const summaryElement = this.popup.querySelector("pre");
+        const summaryElement = this.panel.querySelector("pre");
         if (summaryElement) {
             summaryElement.textContent = "Regenerating summary...";
         }
@@ -93,11 +93,11 @@ export class SummaryPopup {
     }
 
     show() {
-        document.body.appendChild(this.popup);
+        document.body.appendChild(this.panel);
     }
 
     private close() {
-        document.body.removeChild(this.popup);
+        document.body.removeChild(this.panel);
         this.onClose();
     }
-}
+} 

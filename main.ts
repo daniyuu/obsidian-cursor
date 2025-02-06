@@ -1,5 +1,5 @@
 import { App, Editor, Plugin } from "obsidian";
-import { SummaryPopup } from "./ui/SummaryPopup";
+import { WeeklySummaryPanel } from "./ui/WeeklySummaryPanel";
 
 export default class CursorPlugin extends Plugin {
 	async onload() {
@@ -10,7 +10,7 @@ export default class CursorPlugin extends Plugin {
 			name: "Create Weekly Summary",
 			editorCallback: (editor: Editor) => {
 				const selection = editor.getSelection();
-				new SummaryPopup(
+				new WeeklySummaryPanel(
 					selection,
 					editor,
 					() => {}
