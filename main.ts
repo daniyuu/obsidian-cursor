@@ -1,6 +1,6 @@
 import { App, Editor, Plugin } from "obsidian";
-import { WeeklySummaryPanel } from "./ui/WeeklySummaryPanel";
-
+import { WeeklySummaryPanel } from "./components/WeeklySummaryPanel";
+	
 export default class CursorPlugin extends Plugin {
 	async onload() {
 		console.log("Loading Cursor Plugin...");
