@@ -46,11 +46,11 @@ export class WeeklySummaryPanel {
         buttonContainer.addClass("button-container");
 
         const acceptButton = this.createButton("Accept", () => this.handleAccept());
-        const rejectButton = this.createButton("Reject", () => this.handleReject());
+        const closeButton = this.createButton("Close", () => this.handleClose());
         const regenerateButton = this.createButton("Regenerate", () => this.handleRegenerate());
 
         buttonContainer.appendChild(acceptButton);
-        buttonContainer.appendChild(rejectButton);
+        buttonContainer.appendChild(closeButton);
         buttonContainer.appendChild(regenerateButton);
         panel.appendChild(buttonContainer);
 
@@ -70,7 +70,7 @@ export class WeeklySummaryPanel {
         this.close();
     }
 
-    private handleReject() {
+    private handleClose() {
         this.close();
     }
 
