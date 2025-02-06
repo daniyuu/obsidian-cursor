@@ -1,7 +1,21 @@
-export class WeeklySummaryService {
-    constructor(private language: string = 'zh') {}
+import { ApiService } from "../services/api";
 
-    getPrompt(selection: string): string {
+export class AIAgent {
+    private apiService: ApiService;
+    private language: string;
+
+    constructor(language: string = 'zh') {
+        this.apiService = new ApiService();
+        this.language = language;
+    }
+
+    async generateWeeklySummary(text: string): Promise<string> {
+        const prompt = this.createWeeklySummaryPrompt(text);
+        return await this.apiService.getCompletion(prompt);
+    }
+
+
+    private createWeeklySummaryPrompt(text: string): string {
         const languagePrompt = this.getLanguagePrompt();
 
         return `Create an effective weekly work summary that captures key accomplishments, challenges, and insights concisely.  
@@ -27,7 +41,7 @@ Otherwise, omit this header.
 ${languagePrompt}
 
 Here's the content to analyze:
-${selection}`;
+${text}`;
     }
 
     private getLanguagePrompt(): string {

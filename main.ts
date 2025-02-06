@@ -1,42 +1,32 @@
 import { App, Editor, Plugin } from "obsidian";
-import { ApiService } from "./services/api";
 import { SummaryPopup } from "./ui/SummaryPopup";
-import { WeeklySummaryService } from "./services/WeeklySummaryService";
+import { AIAgent } from "./agents/AIAgent";
 
 export default class CursorPlugin extends Plugin {
-	private apiService: ApiService;
-	private weeklySummaryService: WeeklySummaryService;
+	private aiAgent: AIAgent;
 
 	async onload() {
 		console.log("Loading Cursor Plugin...");
 		
-		this.apiService = new ApiService();
-		this.weeklySummaryService = new WeeklySummaryService();
+		this.aiAgent = new AIAgent();
 
 		this.addCommand({
 			id: "weekly-summary",
 			name: "Create Weekly Summary",
 			editorCallback: async (editor: Editor) => {
 				const selection = editor.getSelection();
-				const prompt = this.weeklySummaryService.getPrompt(selection);
-				
-				const completion = await this.apiService.getCompletion(prompt);
+				const completion = await this.aiAgent.generateWeeklySummary(selection);
 				
 				new SummaryPopup(
 					completion,
 					editor,
 					async () => {
-						const newCompletion = await this.regenerateSummary(prompt);
-						return newCompletion;
+						return await this.aiAgent.generateWeeklySummary(selection);
 					},
 					() => {}
 				).show();
 			},
 		});
-	}
-
-	private async regenerateSummary(prompt: string): Promise<string> {
-		return await this.apiService.getCompletion(prompt);
 	}
 
 	onunload() {
