@@ -38,6 +38,10 @@ export class WeeklySummaryPanel {
         const panel = document.createElement("div");
         panel.addClasses(["weekly-summary-panel"]);
         
+        const closeButton = this.createButton("Close", () => this.handleClose());
+        closeButton.addClass("close-button");
+        panel.appendChild(closeButton);
+
         const summaryText = document.createElement("pre");
         summaryText.textContent = this.completion;
         panel.appendChild(summaryText);
@@ -46,11 +50,9 @@ export class WeeklySummaryPanel {
         buttonContainer.addClass("button-container");
 
         const acceptButton = this.createButton("Accept", () => this.handleAccept());
-        const closeButton = this.createButton("Close", () => this.handleClose());
         const regenerateButton = this.createButton("Regenerate", () => this.handleRegenerate());
 
         buttonContainer.appendChild(acceptButton);
-        buttonContainer.appendChild(closeButton);
         buttonContainer.appendChild(regenerateButton);
         panel.appendChild(buttonContainer);
 
@@ -100,4 +102,4 @@ export class WeeklySummaryPanel {
         document.body.removeChild(this.panel);
         this.onClose();
     }
-} 
+}
