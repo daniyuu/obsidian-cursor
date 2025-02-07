@@ -4,28 +4,28 @@ import { AIAgent } from "../agents/AIAgent";
 export class WeeklySummaryPanel {
     private panel: HTMLDivElement;
     private aiAgent: AIAgent;
-    private completion: string;
+    private summaryText: string;
 
     constructor(
         private selectedText: string,
         private editor: Editor,
-        private onClose: () => void
+        private onCloseCallback: () => void
     ) {
         this.aiAgent = new AIAgent();
-        this.panel = this.createPanel();
-        this.generateInitialSummary();
+        this.panel = this.initializePanel();
+        this.fetchInitialSummary();
     }
 
-    private async generateInitialSummary() {
+    private async fetchInitialSummary() {
         const summaryElement = this.panel.querySelector("pre");
         if (summaryElement) {
             summaryElement.textContent = "Generating summary...";
         }
         
         try {
-            this.completion = await this.aiAgent.generateWeeklySummary(this.selectedText);
+            this.summaryText = await this.aiAgent.generateWeeklySummary(this.selectedText);
             if (summaryElement) {
-                summaryElement.textContent = this.completion;
+                summaryElement.textContent = this.summaryText;
             }
         } catch (error) {
             if (summaryElement) {
@@ -34,58 +34,72 @@ export class WeeklySummaryPanel {
         }
     }
 
-    private createPanel(): HTMLDivElement {
+    private initializePanel(): HTMLDivElement {
         const panel = document.createElement("div");
         panel.addClasses(["weekly-summary-panel"]);
         
-        const closeButton = this.createButton("Close", () => this.handleClose());
+        const closeButton = this.createIconButton("×", this.closePanel.bind(this));
         closeButton.addClass("close-button");
         panel.appendChild(closeButton);
 
-        const summaryText = document.createElement("pre");
-        summaryText.textContent = this.completion;
-        panel.appendChild(summaryText);
+        const summaryElement = document.createElement("pre");
+        summaryElement.textContent = this.summaryText;
+        panel.appendChild(summaryElement);
 
-        const buttonContainer = document.createElement("div");
-        buttonContainer.addClass("button-container");
-
-        const acceptButton = this.createButton("Accept", () => this.handleAccept());
-        const regenerateButton = this.createButton("Regenerate", () => this.handleRegenerate());
-
-        buttonContainer.appendChild(acceptButton);
-        buttonContainer.appendChild(regenerateButton);
+        const buttonContainer = this.createButtonContainer();
         panel.appendChild(buttonContainer);
 
         return panel;
     }
 
-    private createButton(text: string, onClick: () => void): HTMLButtonElement {
+    private createButtonContainer(): HTMLDivElement {
+        const container = document.createElement("div");
+        container.addClass("button-container");
+
+        const acceptButton = this.createTextButton("Accept", this.acceptSummary.bind(this));
+        const regenerateButton = this.createTextButton("Regenerate", this.regenerateSummary.bind(this));
+
+        container.appendChild(acceptButton);
+        container.appendChild(regenerateButton);
+
+        return container;
+    }
+
+    private createTextButton(label: string, onClick: () => void): HTMLButtonElement {
         const button = document.createElement("button");
-        button.textContent = text;
+        button.textContent = label;
         button.onclick = onClick;
         return button;
     }
 
-    private handleAccept() {
-        const to = this.editor.getCursor("to");
-        this.editor.replaceRange(`\n\n${this.completion}`, to);
-        this.close();
+    private createIconButton(icon: string, onClick: () => void): HTMLButtonElement {
+        const button = document.createElement("button");
+        button.innerHTML = icon;
+        button.onclick = onClick;
+        return button;
     }
 
-    private handleClose() {
-        this.close();
+    private acceptSummary() {
+        const cursorPosition = this.editor.getCursor("to");
+        this.editor.replaceRange(`\n\n${this.summaryText}`, cursorPosition);
+        this.closePanel();
     }
 
-    private async handleRegenerate() {
+    private closePanel() {
+        document.body.removeChild(this.panel);
+        this.onCloseCallback();
+    }
+
+    private async regenerateSummary() {
         const summaryElement = this.panel.querySelector("pre");
         if (summaryElement) {
             summaryElement.textContent = "Regenerating summary...";
         }
         
         try {
-            this.completion = await this.aiAgent.generateWeeklySummary(this.selectedText);
+            this.summaryText = await this.aiAgent.generateWeeklySummary(this.selectedText);
             if (summaryElement) {
-                summaryElement.textContent = this.completion;
+                summaryElement.textContent = this.summaryText;
             }
         } catch (error) {
             if (summaryElement) {
@@ -96,10 +110,5 @@ export class WeeklySummaryPanel {
 
     show() {
         document.body.appendChild(this.panel);
-    }
-
-    private close() {
-        document.body.removeChild(this.panel);
-        this.onClose();
     }
 }
