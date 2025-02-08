@@ -4,7 +4,10 @@ import { AIAgent } from "../agents/AIAgent";
 export class WeeklySummaryPanel {
     private panel: HTMLDivElement;
     private aiAgent: AIAgent;
-    private summaryText: string;
+    private summaries: Array<{
+        content: string;
+        timestamp: Date;
+    }> = [];
 
     constructor(
         private selectedText: string,
@@ -17,52 +20,109 @@ export class WeeklySummaryPanel {
     }
 
     private async fetchInitialSummary() {
-        const summaryElement = this.panel.querySelector("pre");
-        if (summaryElement) {
-            summaryElement.textContent = "Generating summary...";
-        }
-        
         try {
-            this.summaryText = await this.aiAgent.generateWeeklySummary(this.selectedText);
-            if (summaryElement) {
-                summaryElement.textContent = this.summaryText;
-            }
+            const content = await this.aiAgent.generateWeeklySummary(this.selectedText);
+            this.summaries.push({
+                content,
+                timestamp: new Date()
+            });
+            this.updateSummaryDisplay();
         } catch (error) {
-            if (summaryElement) {
-                summaryElement.textContent = "Error generating summary. Please try again.";
-            }
+            console.error("Error generating summary:", error);
         }
     }
 
     private initializePanel(): HTMLDivElement {
         const panel = document.createElement("div");
-        panel.addClasses(["weekly-summary-panel"]);
+        panel.addClass("weekly-summary-panel");
         
         const closeButton = this.createIconButton("×", this.closePanel.bind(this));
         closeButton.addClass("close-button");
         panel.appendChild(closeButton);
 
-        const summaryElement = document.createElement("pre");
-        summaryElement.textContent = this.summaryText;
-        panel.appendChild(summaryElement);
+        const summaryContainer = document.createElement("div");
+        summaryContainer.addClass("summary-container");
+        panel.appendChild(summaryContainer);
 
-        const buttonContainer = this.createButtonContainer();
+        const buttonContainer = document.createElement("div");
+        buttonContainer.addClass("button-container");
+        const regenerateButton = this.createTextButton("Regenerate", this.regenerateSummary.bind(this));
+        buttonContainer.appendChild(regenerateButton);
         panel.appendChild(buttonContainer);
 
         return panel;
     }
 
-    private createButtonContainer(): HTMLDivElement {
-        const container = document.createElement("div");
-        container.addClass("button-container");
+    private createSummaryColumn(summary: { content: string; timestamp: Date }, index: number): HTMLDivElement {
+        const column = document.createElement("div");
+        column.addClass("summary-column");
 
-        const acceptButton = this.createTextButton("Accept", this.acceptSummary.bind(this));
-        const regenerateButton = this.createTextButton("Regenerate", this.regenerateSummary.bind(this));
+        const header = document.createElement("div");
+        header.addClass("summary-header");
+        
+        const timestamp = document.createElement("span");
+        timestamp.textContent = `Version ${index + 1} (${summary.timestamp.toLocaleTimeString()})`;
+        header.appendChild(timestamp);
 
-        container.appendChild(acceptButton);
-        container.appendChild(regenerateButton);
+        const buttonGroup = document.createElement("div");
+        buttonGroup.addClass("button-group");
 
-        return container;
+        const acceptButton = this.createTextButton("Accept", () => this.acceptSummary(summary.content));
+        const deleteButton = this.createTextButton("Delete", () => this.deleteSummary(index));
+        deleteButton.addClass("delete-button");
+
+        buttonGroup.appendChild(acceptButton);
+        buttonGroup.appendChild(deleteButton);
+        header.appendChild(buttonGroup);
+
+        column.appendChild(header);
+
+        const content = document.createElement("div");
+        content.addClass("summary-content");
+        content.textContent = summary.content;
+        column.appendChild(content);
+
+        return column;
+    }
+
+    private updateSummaryDisplay() {
+        const container = this.panel.querySelector(".summary-container");
+        if (!container) return;
+
+        container.empty();
+        this.summaries.forEach((summary, index) => {
+            const column = this.createSummaryColumn(summary, index);
+            container.appendChild(column);
+        });
+    }
+
+    private async regenerateSummary() {
+        try {
+            const content = await this.aiAgent.generateWeeklySummary(this.selectedText);
+            this.summaries.push({
+                content,
+                timestamp: new Date()
+            });
+            this.updateSummaryDisplay();
+        } catch (error) {
+            console.error("Error regenerating summary:", error);
+        }
+    }
+
+    private acceptSummary(content: string) {
+        const cursorPosition = this.editor.getCursor("to");
+        this.editor.replaceRange(`\n\n${content}`, cursorPosition);
+        this.closePanel();
+    }
+
+    private deleteSummary(index: number) {
+        this.summaries.splice(index, 1);
+        this.updateSummaryDisplay();
+    }
+
+    private closePanel() {
+        document.body.removeChild(this.panel);
+        this.onCloseCallback();
     }
 
     private createTextButton(label: string, onClick: () => void): HTMLButtonElement {
@@ -77,35 +137,6 @@ export class WeeklySummaryPanel {
         button.innerHTML = icon;
         button.onclick = onClick;
         return button;
-    }
-
-    private acceptSummary() {
-        const cursorPosition = this.editor.getCursor("to");
-        this.editor.replaceRange(`\n\n${this.summaryText}`, cursorPosition);
-        this.closePanel();
-    }
-
-    private closePanel() {
-        document.body.removeChild(this.panel);
-        this.onCloseCallback();
-    }
-
-    private async regenerateSummary() {
-        const summaryElement = this.panel.querySelector("pre");
-        if (summaryElement) {
-            summaryElement.textContent = "Regenerating summary...";
-        }
-        
-        try {
-            this.summaryText = await this.aiAgent.generateWeeklySummary(this.selectedText);
-            if (summaryElement) {
-                summaryElement.textContent = this.summaryText;
-            }
-        } catch (error) {
-            if (summaryElement) {
-                summaryElement.textContent = "Error regenerating summary. Please try again.";
-            }
-        }
     }
 
     show() {
