@@ -7,13 +7,14 @@ export class WeeklySummaryPanel {
     private panel: HTMLDivElement;
     private aiAgent: AIAgent;
     private summaryManager: SummaryManager;
+    private loadingOverlay: HTMLDivElement;
 
     constructor(private options: SummaryPanelOptions) {
         this.aiAgent = new AIAgent(options.language);
         this.summaryManager = new SummaryManager();
         this.panel = this.initializePanel();
+        this.loadingOverlay = this.createLoadingOverlay();
         this.setupSubscriptions();
-        this.fetchInitialSummary();
     }
 
     private setupSubscriptions() {
@@ -142,10 +143,13 @@ export class WeeklySummaryPanel {
 
     private async regenerateSummary() {
         try {
+            document.body.appendChild(this.loadingOverlay);
             const content = await this.aiAgent.generateWeeklySummary(this.options.selectedText);
             this.summaryManager.addSummary(content);
         } catch (error) {
             console.error("Error regenerating summary:", error);
+        } finally {
+            document.body.removeChild(this.loadingOverlay);
         }
     }
 
@@ -178,7 +182,27 @@ export class WeeklySummaryPanel {
         return button;
     }
 
-    show() {
+    private createLoadingOverlay(): HTMLDivElement {
+        const overlay = document.createElement("div");
+        overlay.addClass("loading-overlay");
+        
+        const spinner = document.createElement("div");
+        spinner.addClass("loading-spinner");
+        
+        const text = document.createElement("div");
+        text.addClass("loading-text");
+        text.textContent = "Generating summary...";
+        
+        overlay.appendChild(spinner);
+        overlay.appendChild(text);
+        
+        return overlay;
+    }
+
+    async show() {
+        document.body.appendChild(this.loadingOverlay);
+        await this.fetchInitialSummary();
+        document.body.removeChild(this.loadingOverlay);
         document.body.appendChild(this.panel);
     }
 }
