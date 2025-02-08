@@ -1,32 +1,49 @@
 import { Editor } from "obsidian";
 import { AIAgent } from "../agents/AIAgent";
+import { SummaryManager } from '../managers/SummaryManager';
+import { Summary, SummaryPanelOptions, SummaryAction } from '../types';
 
 export class WeeklySummaryPanel {
     private panel: HTMLDivElement;
     private aiAgent: AIAgent;
-    private summaries: Array<{
-        content: string;
-        timestamp: Date;
-    }> = [];
+    private summaryManager: SummaryManager;
 
-    constructor(
-        private selectedText: string,
-        private editor: Editor,
-        private onCloseCallback: () => void
-    ) {
-        this.aiAgent = new AIAgent();
+    constructor(private options: SummaryPanelOptions) {
+        this.aiAgent = new AIAgent(options.language);
+        this.summaryManager = new SummaryManager();
         this.panel = this.initializePanel();
+        this.setupSubscriptions();
         this.fetchInitialSummary();
+    }
+
+    private setupSubscriptions() {
+        this.summaryManager.subscribe(() => {
+            this.updateSummaryDisplay();
+        });
+    }
+
+    private async handleSummaryAction(action: SummaryAction, summary?: Summary) {
+        switch (action.type) {
+            case 'accept':
+                if (summary) {
+                    this.acceptSummary(summary.content);
+                }
+                break;
+            case 'delete':
+                if (summary) {
+                    this.summaryManager.deleteSummary(summary.id);
+                }
+                break;
+            case 'regenerate':
+                await this.regenerateSummary();
+                break;
+        }
     }
 
     private async fetchInitialSummary() {
         try {
-            const content = await this.aiAgent.generateWeeklySummary(this.selectedText);
-            this.summaries.push({
-                content,
-                timestamp: new Date()
-            });
-            this.updateSummaryDisplay();
+            const content = await this.aiAgent.generateWeeklySummary(this.options.selectedText);
+            this.summaryManager.addSummary(content);
         } catch (error) {
             console.error("Error generating summary:", error);
         }
@@ -46,14 +63,16 @@ export class WeeklySummaryPanel {
 
         const buttonContainer = document.createElement("div");
         buttonContainer.addClass("button-container");
-        const regenerateButton = this.createTextButton("Regenerate", this.regenerateSummary.bind(this));
+        const regenerateButton = this.createTextButton("Regenerate", 
+            () => this.handleSummaryAction({ type: 'regenerate' })
+        );
         buttonContainer.appendChild(regenerateButton);
         panel.appendChild(buttonContainer);
 
         return panel;
     }
 
-    private createSummaryColumn(summary: { content: string; timestamp: Date }, index: number): HTMLDivElement {
+    private createSummaryColumn(summary: Summary, index: number): HTMLDivElement {
         const column = document.createElement("div");
         column.addClass("summary-column");
 
@@ -67,8 +86,12 @@ export class WeeklySummaryPanel {
         const buttonGroup = document.createElement("div");
         buttonGroup.addClass("button-group");
 
-        const acceptButton = this.createTextButton("Accept", () => this.acceptSummary(summary.content));
-        const deleteButton = this.createTextButton("Delete", () => this.deleteSummary(index));
+        const acceptButton = this.createTextButton("Accept", 
+            () => this.handleSummaryAction({ type: 'accept' }, summary)
+        );
+        const deleteButton = this.createTextButton("Delete", 
+            () => this.handleSummaryAction({ type: 'delete' }, summary)
+        );
         deleteButton.addClass("delete-button");
 
         buttonGroup.appendChild(acceptButton);
@@ -90,7 +113,7 @@ export class WeeklySummaryPanel {
         if (!container) return;
 
         container.empty();
-        this.summaries.forEach((summary, index) => {
+        this.summaryManager.getSummaries().forEach((summary, index) => {
             const column = this.createSummaryColumn(summary, index);
             container.appendChild(column);
         });
@@ -98,31 +121,26 @@ export class WeeklySummaryPanel {
 
     private async regenerateSummary() {
         try {
-            const content = await this.aiAgent.generateWeeklySummary(this.selectedText);
-            this.summaries.push({
-                content,
-                timestamp: new Date()
-            });
-            this.updateSummaryDisplay();
+            const content = await this.aiAgent.generateWeeklySummary(this.options.selectedText);
+            this.summaryManager.addSummary(content);
         } catch (error) {
             console.error("Error regenerating summary:", error);
         }
     }
 
     private acceptSummary(content: string) {
-        const cursorPosition = this.editor.getCursor("to");
-        this.editor.replaceRange(`\n\n${content}`, cursorPosition);
+        const cursorPosition = this.options.editor.getCursor("to");
+        this.options.editor.replaceRange(`\n\n${content}`, cursorPosition);
         this.closePanel();
     }
 
     private deleteSummary(index: number) {
-        this.summaries.splice(index, 1);
-        this.updateSummaryDisplay();
+        this.summaryManager.deleteSummary(this.summaryManager.getSummaries()[index].id);
     }
 
     private closePanel() {
         document.body.removeChild(this.panel);
-        this.onCloseCallback();
+        this.options.onClose();
     }
 
     private createTextButton(label: string, onClick: () => void): HTMLButtonElement {

@@ -10,11 +10,11 @@ export default class CursorPlugin extends Plugin {
 			name: "Create Weekly Summary",
 			editorCallback: (editor: Editor) => {
 				const selection = editor.getSelection();
-				new WeeklySummaryPanel(
-					selection,
-					editor,
-					() => {}
-				).show();
+				new WeeklySummaryPanel({
+					selectedText: selection,
+					editor: editor,
+					onClose: () => {}
+				}).show();
 			},
 		});
 	}
