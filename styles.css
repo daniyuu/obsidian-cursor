@@ -86,4 +86,24 @@ If your plugin does not need CSS, delete this file.
 .summary-content {
     white-space: pre-wrap;
     word-break: break-word;
+    padding: 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    min-height: 100px;
+}
+
+.summary-content:hover {
+    border-color: var(--background-modifier-border);
+}
+
+.summary-content.editing {
+    border-color: var(--interactive-accent);
+    background-color: var(--background-primary);
+    box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+    outline: none;
+}
+
+.summary-content:focus {
+    outline: none;
 }

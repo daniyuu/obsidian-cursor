@@ -102,9 +102,26 @@ export class WeeklySummaryPanel {
 
         const content = document.createElement("div");
         content.addClass("summary-content");
+        content.setAttribute("contenteditable", "true");
         content.textContent = summary.content;
-        column.appendChild(content);
 
+        let timeoutId: NodeJS.Timeout;
+        content.addEventListener("input", () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                this.summaryManager.updateSummaryContent(summary.id, content.textContent || "");
+            }, 500);
+        });
+
+        content.addEventListener("focus", () => {
+            content.addClass("editing");
+        });
+
+        content.addEventListener("blur", () => {
+            content.removeClass("editing");
+        });
+
+        column.appendChild(content);
         return column;
     }
 

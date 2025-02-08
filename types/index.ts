@@ -4,6 +4,7 @@ export interface Summary {
     content: string;
     timestamp: Date;
     id: string;
+    isEditing?: boolean;
 }
 
 

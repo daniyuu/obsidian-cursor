@@ -33,4 +33,13 @@ export class SummaryManager {
     private notifyListeners() {
         this.listeners.forEach(listener => listener());
     }
+
+    updateSummaryContent(id: string, content: string) {
+        const summary = this.summaries.find(s => s.id === id);
+        if (summary) {
+            summary.content = content;
+            summary.timestamp = new Date();
+            this.notifyListeners();
+        }
+    }
 } 
