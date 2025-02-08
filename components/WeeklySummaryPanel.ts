@@ -82,22 +82,6 @@ export class WeeklySummaryPanel {
         const timestamp = document.createElement("span");
         timestamp.textContent = `Version ${index + 1} (${summary.timestamp.toLocaleTimeString()})`;
         header.appendChild(timestamp);
-
-        const buttonGroup = document.createElement("div");
-        buttonGroup.addClass("button-group");
-
-        const acceptButton = this.createTextButton("Accept", 
-            () => this.handleSummaryAction({ type: 'accept' }, summary)
-        );
-        const deleteButton = this.createTextButton("Delete", 
-            () => this.handleSummaryAction({ type: 'delete' }, summary)
-        );
-        deleteButton.addClass("delete-button");
-
-        buttonGroup.appendChild(acceptButton);
-        buttonGroup.appendChild(deleteButton);
-        header.appendChild(buttonGroup);
-
         column.appendChild(header);
 
         const content = document.createElement("div");
@@ -122,6 +106,26 @@ export class WeeklySummaryPanel {
         });
 
         column.appendChild(content);
+
+        const buttonContainer = document.createElement("div");
+        buttonContainer.addClass("summary-footer");
+
+        const buttonGroup = document.createElement("div");
+        buttonGroup.addClass("button-group");
+
+        const acceptButton = this.createTextButton("Accept", 
+            () => this.handleSummaryAction({ type: 'accept' }, summary)
+        );
+        const deleteButton = this.createTextButton("Delete", 
+            () => this.handleSummaryAction({ type: 'delete' }, summary)
+        );
+        deleteButton.addClass("delete-button");
+
+        buttonGroup.appendChild(acceptButton);
+        buttonGroup.appendChild(deleteButton);
+        buttonContainer.appendChild(buttonGroup);
+        
+        column.appendChild(buttonContainer);
         return column;
     }
 
