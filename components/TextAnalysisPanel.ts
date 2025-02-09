@@ -30,7 +30,7 @@ export class TextAnalysisPanel extends Component {
                 <button class="close-button">×</button>
             </div>
             <div class="original-text" contenteditable="true" data-mode="raw">${this.options.selectedText}</div>
-            <div class="ai-suggestions"></div>
+            <div class="ai-suggestions" contenteditable="true" data-role="suggestion-area"></div>
             <div class="analysis-footer">
                 <button class="apply-button">✅ 应用建议</button>
                 <button class="modify-button">✏️ 按建议修改</button>

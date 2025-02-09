@@ -261,6 +261,8 @@ If your plugin does not need CSS, delete this file.
     padding: 12px;
     background: var(--background-secondary);
     color: var(--text-normal);
+    user-select: text;
+    cursor: text;
 }
 
 .analysis-footer {
@@ -304,6 +306,15 @@ If your plugin does not need CSS, delete this file.
 
 .ai-suggestions li {
     margin: 4px 0;
+    position: relative;
+    padding-left: 1.2em;
+}
+
+.ai-suggestions li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
 }
 
 .ai-suggestions strong {
@@ -408,4 +419,15 @@ If your plugin does not need CSS, delete this file.
 .original-text::-webkit-scrollbar-track,
 .ai-suggestions::-webkit-scrollbar-track {
     background-color: var(--scrollbar-track);
+}
+
+/* 增强建议区编辑体验 */
+.ai-suggestions:focus {
+    border-color: var(--interactive-accent);
+    box-shadow: 0 0 0 2px var(--interactive-accent-hover);
+}
+
+/* 添加段落间距便于编辑 */
+.ai-suggestions p {
+    margin: 0.8em 0;
 }
