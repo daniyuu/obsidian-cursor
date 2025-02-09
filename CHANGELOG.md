@@ -57,4 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - 修复长文本修改时的滚动问题
 - 修正加载层叠顺序问题
-- 解决移动端按钮显示错位 
+- 解决移动端按钮显示错位
+- 修复原文区Markdown显示问题 (#47)
+  - 正确显示换行符和Markdown符号
+  - 使用等宽字体提升可读性
+- 优化换行符显示方式
+  - 使用`<br>`标签替代`\n`
+  - 添加空白字符保留样式 
