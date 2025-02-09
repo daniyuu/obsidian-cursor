@@ -28,11 +28,14 @@ export class AskAIPanel extends Component {
                 <button class="close-button">×</button>
             </div>
             <div class="ai-container">
-                <textarea 
-                    class="original-editor" 
-                    spellcheck="false"
-                    placeholder="在此编辑原文..."
-                ></textarea>
+                <div class="original-editor-container">
+                    <button class="apply-button">✅ 应用修改</button>
+                    <textarea 
+                        class="original-editor" 
+                        spellcheck="false"
+                        placeholder="在此编辑原文..."
+                    ></textarea>
+                </div>
                 <div class="ai-response markdown-rendered"></div>
             </div>
             <div class="ai-input-area">
@@ -54,6 +57,10 @@ export class AskAIPanel extends Component {
         
         closeButton.addEventListener("click", () => this.close());
         askButton.addEventListener("click", () => this.handleAsk());
+
+        // 添加应用按钮事件
+        const applyButton = panel.querySelector(".apply-button") as HTMLButtonElement;
+        applyButton.addEventListener("click", () => this.applyChanges());
 
         return panel;
     }
@@ -95,6 +102,13 @@ export class AskAIPanel extends Component {
             askButton.textContent = "Ask";
             inputArea.value = "";
         }
+    }
+
+    private applyChanges() {
+        const modifiedText = this.options.selectedText;
+        this.options.editor.replaceSelection(modifiedText);
+        new Notice("修改已应用");
+        this.close();
     }
 
     public show() {

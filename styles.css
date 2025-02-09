@@ -539,3 +539,31 @@ If your plugin does not need CSS, delete this file.
     border-color: var(--interactive-accent);
     box-shadow: 0 0 0 2px var(--interactive-accent);
 }
+
+/* 添加应用按钮样式 */
+.original-editor-container {
+    position: relative;
+}
+
+.apply-button {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    z-index: 2;
+    padding: 4px 8px;
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.apply-button:hover {
+    background: var(--interactive-accent-hover);
+}
+
+/* 调整编辑器高度 */
+.original-editor {
+    height: calc(100% - 40px); /* 给按钮留出空间 */
+}
