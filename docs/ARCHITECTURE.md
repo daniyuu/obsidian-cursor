@@ -115,5 +115,3 @@ sequenceDiagram
     组件层->>事件总线: 4. 订阅FEATURE_EVENT
     逻辑层->>事件总线: 5. 触发FEATURE_UPDATE
 ```
-
-> 文档版本：2.0.0 | 最后更新：2024-02-20 | 维护者：Kagura Chen 
