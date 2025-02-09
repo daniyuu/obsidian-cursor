@@ -1,5 +1,5 @@
 import { AIAgent } from "../agents/AIAgent";
-import { Editor, MarkdownRenderer, Component, App } from "obsidian";    
+import { Editor, MarkdownRenderer, Component, App, Notice } from "obsidian";    
 
 export class AskAIPanel extends Component {
     private panel: HTMLDivElement;
@@ -28,7 +28,11 @@ export class AskAIPanel extends Component {
                 <button class="close-button">×</button>
             </div>
             <div class="ai-container">
-                <div class="original-preview markdown-rendered"></div>
+                <textarea 
+                    class="original-editor" 
+                    spellcheck="false"
+                    placeholder="在此编辑原文..."
+                ></textarea>
                 <div class="ai-response markdown-rendered"></div>
             </div>
             <div class="ai-input-area">
@@ -37,34 +41,33 @@ export class AskAIPanel extends Component {
             </div>
         `;
 
-        // 初始化Markdown渲染
-        this.renderOriginalText(panel.querySelector(".original-preview"));
+        // 初始化原文编辑器
+        const editor = panel.querySelector(".original-editor") as HTMLTextAreaElement;
+        editor.value = this.options.selectedText;
+        editor.addEventListener("input", (e) => {
+            this.options.selectedText = (e.target as HTMLTextAreaElement).value;
+        });
 
         // 事件绑定
-        panel.querySelector(".close-button")?.addEventListener("click", () => this.close());
-        panel.querySelector(".ask-button")?.addEventListener("click", () => this.handleAsk());
+        const closeButton = panel.querySelector(".close-button") as HTMLButtonElement;
+        const askButton = panel.querySelector(".ask-button") as HTMLButtonElement;
+        
+        closeButton.addEventListener("click", () => this.close());
+        askButton.addEventListener("click", () => this.handleAsk());
 
         return panel;
     }
 
-    private async renderOriginalText(container: HTMLElement) {
-        await MarkdownRenderer.render(
-            this.app,
-            this.options.selectedText,
-            container,
-            "",
-            this
-        );
-    }
-
     private async handleAsk() {
-        const inputArea = this.panel.querySelector(".user-input") as HTMLTextAreaElement;
-        const askButton = this.panel.querySelector(".ask-button");
-        const responseArea = this.panel.querySelector(".ai-response");
+        const inputArea = this.panel.querySelector<HTMLTextAreaElement>(".user-input");
+        const askButton = this.panel.querySelector<HTMLButtonElement>(".ask-button");
+        const responseArea = this.panel.querySelector<HTMLDivElement>(".ai-response");
         
-        if (!inputArea?.value.trim()) return;
+        if (!inputArea?.value.trim() || !askButton || !responseArea) return;
 
-        // 禁用按钮并显示加载状态
+        // 保存原始内容用于错误处理
+        const originalContent = responseArea.innerHTML;
+        
         askButton?.setAttribute("disabled", "true");
         askButton.textContent = "处理中...";
         responseArea.innerHTML = '<div class="loading-spinner"></div>';
@@ -75,6 +78,8 @@ export class AskAIPanel extends Component {
                 inputArea.value
             );
             
+            // 先清空内容再渲染
+            responseArea.innerHTML = ''; 
             await MarkdownRenderer.render(
                 this.app,
                 response,
@@ -82,6 +87,9 @@ export class AskAIPanel extends Component {
                 "",
                 this
             );
+        } catch (error) {
+            new Notice("AI请求失败，请重试");
+            responseArea.innerHTML = originalContent; // 恢复之前内容
         } finally {
             askButton?.removeAttribute("disabled");
             askButton.textContent = "Ask";
