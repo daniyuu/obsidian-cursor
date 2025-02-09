@@ -92,3 +92,7 @@ If you have multiple URLs, you can also do:
 ## API Documentation
 
 See https://github.com/obsidianmd/obsidian-api
+
+## 文档目录
+- [开发指南](docs/ARCHITECTURE.md) - 系统架构与构建说明
+- [用户手册](docs/zh-CN/USER_GUIDE.md) - 功能使用与操作指南
