@@ -172,3 +172,92 @@ If your plugin does not need CSS, delete this file.
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* 新增文本分析面板样式 */
+.text-analysis-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    max-width: 800px;
+    min-height: 400px;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    padding-bottom: 8px;
+}
+
+.analysis-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-normal);
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.close-button:hover {
+    color: var(--text-normal);
+}
+
+.original-text {
+    flex: 1;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 12px;
+    overflow-y: auto;
+    background: var(--background-primary);
+    color: var(--text-normal);
+}
+
+.ai-suggestions {
+    flex: 2;
+    border: 1px solid var(--background-modifier-border-hover);
+    border-radius: 4px;
+    padding: 12px;
+    background: var(--background-secondary);
+    color: var(--text-normal);
+    overflow-y: auto;
+}
+
+.analysis-footer {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.analysis-footer button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--interactive-accent);
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.analysis-footer button:hover {
+    background: var(--interactive-accent-hover);
+}

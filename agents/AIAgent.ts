@@ -14,6 +14,10 @@ export class AIAgent {
         return await this.apiService.getCompletion(prompt);
     }
 
+    async analyzeText(text: string): Promise<string> {
+        const prompt = this.createAnalysisPrompt(text);
+        return await this.apiService.getCompletion(prompt);
+    }
 
     private createWeeklySummaryPrompt(text: string): string {
         const languagePrompt = this.getLanguagePrompt();
@@ -41,6 +45,21 @@ Otherwise, omit this header.
 ${languagePrompt}
 
 Here's the content to analyze:
+${text}`;
+    }
+
+    private createAnalysisPrompt(text: string): string {
+        return `请分析以下文本并提出修改建议，按以下格式响应：
+1. **核心问题**：（用项目符号列出主要问题）
+2. **优化建议**：（分点给出具体建议）
+3. **改进示例**：（提供修改后的示例段落）
+
+分析要求：
+- 保持专业但友好的语气
+- 使用用户当前语言（${this.language}）响应
+- 避免使用技术术语
+
+待分析文本：
 ${text}`;
     }
 
