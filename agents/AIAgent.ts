@@ -19,6 +19,11 @@ export class AIAgent {
         return await this.apiService.getCompletion(prompt);
     }
 
+    async processModification(original: string, suggestions: string): Promise<string> {
+        const prompt = this.createModificationPrompt(original, suggestions);
+        return await this.apiService.getCompletion(prompt);
+    }
+
     private createWeeklySummaryPrompt(text: string): string {
         const languagePrompt = this.getLanguagePrompt();
 
@@ -61,6 +66,21 @@ ${text}`;
 
 待分析文本：
 ${text}`;
+    }
+
+    private createModificationPrompt(original: string, suggestions: string): string {
+        return `请根据以下建议修改原始文本，要求：
+1. 保持原文核心内容
+2. 仅应用合理建议
+3. 输出最终修改版
+
+原始文本：
+${original}
+
+建议内容：
+${suggestions}
+
+修改后的文本：`;
     }
 
     private getLanguagePrompt(): string {

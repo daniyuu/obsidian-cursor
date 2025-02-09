@@ -33,6 +33,7 @@ export class TextAnalysisPanel extends Component {
             <div class="ai-suggestions"></div>
             <div class="analysis-footer">
                 <button class="apply-button">✅ 应用建议</button>
+                <button class="modify-button">✏️ 按建议修改</button>
                 <button class="regenerate-button">🔄 重新分析</button>
             </div>
         `;
@@ -41,6 +42,7 @@ export class TextAnalysisPanel extends Component {
         panel.querySelector(".close-button")?.addEventListener("click", () => this.close());
         panel.querySelector(".regenerate-button")?.addEventListener("click", () => this.regenerateAnalysis());
         panel.querySelector(".apply-button")?.addEventListener("click", () => this.applySuggestions());
+        panel.querySelector(".modify-button")?.addEventListener("click", () => this.handleModifyRequest());
 
         return panel;
     }
@@ -109,6 +111,57 @@ export class TextAnalysisPanel extends Component {
         const editedText = this.panel.querySelector(".original-text")?.textContent || "";
         this.options.editor.replaceSelection(editedText);
         this.close();
+    }
+
+    private async handleModifyRequest() {
+        const originalText = this.panel.querySelector(".original-text")?.textContent || "";
+        const suggestions = this.panel.querySelector(".ai-suggestions")?.textContent || "";
+        
+        const modifyButton = this.panel.querySelector(".modify-button");
+        if (modifyButton) {
+            modifyButton.setAttribute("disabled", "true");
+            modifyButton.textContent = "修改中...";
+        }
+
+        // 在原始文本区显示加载
+        this.showOriginalTextLoading(true);
+
+        try {
+            const modifiedText = await this.aiAgent.processModification(originalText, suggestions);
+            this.updateOriginalText(modifiedText);
+        } catch (error) {
+            console.error("修改失败:", error);
+            this.showError("修改请求失败，请重试");
+        } finally {
+            this.showOriginalTextLoading(false);
+            if (modifyButton) {
+                modifyButton.removeAttribute("disabled");
+                modifyButton.textContent = "✏️ 按建议修改";
+            }
+        }
+    }
+
+    private showOriginalTextLoading(show: boolean) {
+        const originalArea = this.panel.querySelector(".original-text");
+        if (!originalArea) return;
+
+        originalArea.classList.toggle("loading", show);
+        if (show) {
+            const loader = originalArea.createDiv("text-loading-overlay");
+            loader.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">正在应用修改...</div>
+            `;
+        } else {
+            originalArea.querySelector(".text-loading-overlay")?.remove();
+        }
+    }
+
+    private updateOriginalText(content: string) {
+        const originalArea = this.panel.querySelector(".original-text");
+        if (originalArea) {
+            originalArea.textContent = content;
+        }
     }
 
     public show() {
