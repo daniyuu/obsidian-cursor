@@ -570,3 +570,53 @@ If your plugin does not need CSS, delete this file.
 .original-editor {
     height: calc(100% - 40px); /* 给按钮留出空间 */
 }
+
+/* 修改AI响应区域样式 */
+.ai-response {
+    padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    background: var(--background-secondary);
+    min-height: 200px;
+    overflow-y: auto;
+    transition: all 0.2s ease;
+}
+
+/* 增强Markdown可编辑体验 */
+.ai-response[contenteditable="true"] {
+    border-color: var(--interactive-accent);
+    background: var(--background-primary);
+    padding: 12px;
+}
+
+/* 可编辑状态下的Markdown元素样式 */
+.ai-response[contenteditable="true"] h1,
+.ai-response[contenteditable="true"] h2,
+.ai-response[contenteditable="true"] h3 {
+    border-bottom: none;
+    cursor: text;
+}
+
+.ai-response[contenteditable="true"] pre {
+    background-color: var(--background-secondary);
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.ai-response[contenteditable="true"] code {
+    background-color: var(--background-secondary-alt);
+    padding: 2px 4px;
+}
+
+/* 保持Markdown元素的可编辑性 */
+.ai-response[contenteditable="true"] * {
+    user-select: text;
+    cursor: text;
+}
+
+/* 添加占位符样式 */
+.ai-response[data-role="response-editor"]:empty:before {
+    content: attr(placeholder);
+    color: var(--text-muted);
+    pointer-events: none;
+}

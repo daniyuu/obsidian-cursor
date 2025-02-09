@@ -36,7 +36,12 @@ export class AskAIPanel extends Component {
                         placeholder="在此编辑原文..."
                     ></textarea>
                 </div>
-                <div class="ai-response markdown-rendered"></div>
+                <div 
+                    class="ai-response markdown-rendered" 
+                    contenteditable="true"
+                    data-role="response-editor"
+                    placeholder="AI回答将显示在这里，可直接编辑..."
+                ></div>
             </div>
             <div class="ai-input-area">
                 <textarea class="user-input" placeholder="输入你的问题..."></textarea>
@@ -86,7 +91,7 @@ export class AskAIPanel extends Component {
             );
             
             // 先清空内容再渲染
-            responseArea.innerHTML = ''; 
+            responseArea.innerHTML = '';
             await MarkdownRenderer.render(
                 this.app,
                 response,
@@ -94,6 +99,9 @@ export class AskAIPanel extends Component {
                 "",
                 this
             );
+            
+            // 渲染后保持可编辑状态
+            responseArea.setAttribute("contenteditable", "true");
         } catch (error) {
             new Notice("AI请求失败，请重试");
             responseArea.innerHTML = originalContent; // 恢复之前内容
