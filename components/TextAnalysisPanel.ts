@@ -46,9 +46,45 @@ export class TextAnalysisPanel extends Component {
     }
 
     private async regenerateAnalysis() {
+        const button = this.panel.querySelector(".regenerate-button");
+        if (button) {
+            button.setAttribute("disabled", "true");
+            button.textContent = "分析中...";
+        }
+
         const editedText = this.panel.querySelector(".original-text")?.textContent || "";
-        const suggestions = await this.aiAgent.analyzeText(editedText);
-        await this.showSuggestions(suggestions);
+        
+        // 显示加载状态
+        this.showLoading();
+        
+        try {
+            const suggestions = await this.aiAgent.analyzeText(editedText);
+            await this.showSuggestions(suggestions);
+        } finally {
+            // 隐藏加载状态
+            this.hideLoading();
+            if (button) {
+                button.removeAttribute("disabled");
+                button.textContent = "🔄 重新分析";
+            }
+        }
+    }
+
+    private showLoading() {
+        const suggestionArea = this.panel.querySelector(".ai-suggestions");
+        if (suggestionArea) {
+            suggestionArea.empty();
+            const loadingEl = suggestionArea.createDiv("analysis-loading");
+            loadingEl.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">AI分析中...</div>
+            `;
+        }
+    }
+
+    private hideLoading() {
+        const suggestionArea = this.panel.querySelector(".ai-suggestions");
+        suggestionArea?.querySelector(".analysis-loading")?.remove();
     }
 
     private async showSuggestions(suggestions: string) {

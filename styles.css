@@ -232,6 +232,8 @@ If your plugin does not need CSS, delete this file.
 }
 
 .ai-suggestions {
+    position: relative;
+    min-height: 150px;
     flex: 2;
     border: 1px solid var(--background-modifier-border-hover);
     border-radius: 4px;
@@ -299,4 +301,48 @@ If your plugin does not need CSS, delete this file.
     display: block;
     padding: 8px;
     overflow-x: auto;
+}
+
+/* 添加加载动画样式 */
+.analysis-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--background-secondary);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 20px;
+}
+
+.analysis-loading .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--background-modifier-border);
+    border-top: 3px solid var(--interactive-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+.analysis-loading .loading-text {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 禁用按钮交互状态 */
+.analysis-footer button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.8);
 }
