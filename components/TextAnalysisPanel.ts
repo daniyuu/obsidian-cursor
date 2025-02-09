@@ -23,13 +23,13 @@ export class TextAnalysisPanel extends Component {
         const panel = document.createElement("div");
         panel.addClass("text-analysis-panel");
         
-        // 内容结构
+        // 使用pre-wrap保留换行符
         panel.innerHTML = `
             <div class="analysis-header">
                 <h3>AI 文本分析</h3>
                 <button class="close-button">×</button>
             </div>
-            <div class="original-text" contenteditable="true">${this.options.selectedText}</div>
+            <div class="original-text" contenteditable="true" data-mode="raw">${this.options.selectedText}</div>
             <div class="ai-suggestions"></div>
             <div class="analysis-footer">
                 <button class="apply-button">✅ 应用建议</button>
@@ -160,7 +160,8 @@ export class TextAnalysisPanel extends Component {
     private updateOriginalText(content: string) {
         const originalArea = this.panel.querySelector(".original-text");
         if (originalArea) {
-            originalArea.textContent = content;
+            // 使用innerHTML保持换行符
+            originalArea.innerHTML = content.replace(/\n/g, '<br>');
         }
     }
 

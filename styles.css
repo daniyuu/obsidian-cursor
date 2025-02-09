@@ -221,14 +221,27 @@ If your plugin does not need CSS, delete this file.
 }
 
 .original-text {
-    flex: 1;
-    border: 1px solid var(--background-modifier-border);
+    white-space: pre-wrap;
+    font-family: var(--font-monospace);
+    padding: 10px;
+    background: var(--background-secondary);
     border-radius: 4px;
-    padding: 12px;
-    margin-bottom: 12px;
-    overflow-y: auto;
-    background: var(--background-primary);
-    color: var(--text-normal);
+    margin: 10px 0;
+}
+
+.original-text br {
+    content: "";
+    display: block;
+    margin-bottom: 8px;
+}
+
+.original-text [data-mode="raw"] {
+    color: var(--text-muted);
+}
+
+.original-text [data-mode="preview"] {
+    white-space: normal;
+    font-family: var(--font-text);
 }
 
 .ai-suggestions {
