@@ -25,3 +25,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 核心周报生成功能
 - 多版本管理功能
 - 中英文双语支持 
+
+## [0.2.0] - 2024-02-21
+### Added
+- 文本分析功能加载状态指示
+- 禁用重复请求的按钮交互
+
+### Changed
+- 优化分析面板的视觉层次
+- 增强错误处理机制
+
+### Fixed
+- 修复加载状态无法清除的问题
+- 修正面板最小高度问题 
