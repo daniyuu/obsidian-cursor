@@ -1,5 +1,5 @@
 import { AIAgent } from "../agents/AIAgent";
-import { Editor, MarkdownRenderer } from "obsidian";
+import { Editor, MarkdownRenderer, Notice } from "obsidian";
 import { App, Component } from "obsidian";
 
 export class TextAnalysisPanel extends Component {
@@ -131,7 +131,7 @@ export class TextAnalysisPanel extends Component {
             this.updateOriginalText(modifiedText);
         } catch (error) {
             console.error("修改失败:", error);
-            this.showError("修改请求失败，请重试");
+            new Notice("修改请求失败，请重试");
         } finally {
             this.showOriginalTextLoading(false);
             if (modifyButton) {
