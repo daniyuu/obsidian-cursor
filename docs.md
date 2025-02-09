@@ -135,4 +135,13 @@ headers:
 4. 检查 API 连接状态
 </details>
 
+## 七、版本历史
+最新变更请查看 [CHANGELOG.md](CHANGELOG.md)，维护规范：
+1. 所有功能修改必须关联 Issue 编号
+2. 重大变更需在 Release Notes 说明迁移方案
+3. 使用语义化版本号：
+   - MAJOR 版本：不兼容的 API 修改
+   - MINOR 版本：向下兼容的功能新增
+   - PATCH 版本：向下兼容的问题修正
+
 > **开源信息**：本插件遵循 MIT 协议，最新版本请访问 [GitHub 仓库](https://github.com/your-repo)。问题反馈请提交 issue 并附 console 日志。

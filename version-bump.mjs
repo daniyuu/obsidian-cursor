@@ -12,3 +12,8 @@ writeFileSync("manifest.json", JSON.stringify(manifest, null, "\t"));
 let versions = JSON.parse(readFileSync("versions.json", "utf8"));
 versions[targetVersion] = minAppVersion;
 writeFileSync("versions.json", JSON.stringify(versions, null, "\t"));
+
+// 更新CHANGELOG
+const changelog = readFileSync("CHANGELOG.md", "utf8");
+const newEntry = `\n\n## [${targetVersion}] - ${new Date().toISOString().split('T')[0]}`;
+writeFileSync("CHANGELOG.md", changelog.replace(/## \[Unreleased\]/, `## [Unreleased]\n\n## [${targetVersion}] - ${new Date().toISOString().split('T')[0]}`));
