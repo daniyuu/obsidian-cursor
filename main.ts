@@ -24,11 +24,14 @@ export default class CursorPlugin extends Plugin {
 			name: "Analyze Text",
 			editorCallback: (editor: Editor) => {
 				const selection = editor.getSelection();
-				new TextAnalysisPanel({
-					selectedText: selection,
-					editor: editor,
-					onClose: () => {}
-				}).show();
+				new TextAnalysisPanel(
+					this.app,
+					{
+						selectedText: selection,
+						editor: editor,
+						onClose: () => {}
+					}
+				).show();
 			},
 		});
 	}

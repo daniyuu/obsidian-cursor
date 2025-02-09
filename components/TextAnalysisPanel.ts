@@ -1,15 +1,20 @@
 import { AIAgent } from "../agents/AIAgent";
-import { Editor } from "obsidian";
+import { Editor, MarkdownRenderer } from "obsidian";
+import { App, Component } from "obsidian";
 
-export class TextAnalysisPanel {
+export class TextAnalysisPanel extends Component {
     private panel: HTMLDivElement;
     private aiAgent: AIAgent;
 
-    constructor(private options: { 
-        selectedText: string;
-        editor: Editor;
-        onClose: () => void;
-    }) {
+    constructor(
+        private app: App,
+        private options: { 
+            selectedText: string;
+            editor: Editor;
+            onClose: () => void;
+        }
+    ) {
+        super();
         this.aiAgent = new AIAgent();
         this.panel = this.createPanel();
     }
@@ -43,13 +48,24 @@ export class TextAnalysisPanel {
     private async regenerateAnalysis() {
         const editedText = this.panel.querySelector(".original-text")?.textContent || "";
         const suggestions = await this.aiAgent.analyzeText(editedText);
-        this.showSuggestions(suggestions);
+        await this.showSuggestions(suggestions);
     }
 
-    private showSuggestions(suggestions: string) {
+    private async showSuggestions(suggestions: string) {
         const suggestionArea = this.panel.querySelector(".ai-suggestions");
         if (suggestionArea) {
-            suggestionArea.innerHTML = suggestions;
+            // 清空现有内容并创建渲染容器
+            suggestionArea.empty();
+            const contentEl = suggestionArea.createDiv("markdown-rendered");
+            
+            // 使用Obsidian的Markdown渲染器
+            await MarkdownRenderer.render(
+                this.app,
+                suggestions,
+                contentEl,
+                "", // 文件路径（可选）
+                this // 这里传递 Component 实例
+            );
         }
     }
 
@@ -67,5 +83,9 @@ export class TextAnalysisPanel {
     private close() {
         document.body.removeChild(this.panel);
         this.options.onClose();
+    }
+
+    onunload() {
+        this.close();
     }
 } 

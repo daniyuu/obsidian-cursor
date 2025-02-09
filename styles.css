@@ -261,3 +261,42 @@ If your plugin does not need CSS, delete this file.
 .analysis-footer button:hover {
     background: var(--interactive-accent-hover);
 }
+
+/* 添加Markdown渲染样式 */
+.ai-suggestions .markdown-rendered {
+    padding: 8px;
+    font-size: 14px;
+}
+
+.ai-suggestions h3 {
+    margin: 12px 0 8px;
+    color: var(--text-accent);
+    font-size: 15px;
+}
+
+.ai-suggestions ul,
+.ai-suggestions ol {
+    padding-left: 1.5em;
+    margin: 8px 0;
+}
+
+.ai-suggestions li {
+    margin: 4px 0;
+}
+
+.ai-suggestions strong {
+    color: var(--text-accent);
+}
+
+.ai-suggestions code {
+    font-family: var(--font-monospace);
+    background-color: var(--background-secondary-alt);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.ai-suggestions pre code {
+    display: block;
+    padding: 8px;
+    overflow-x: auto;
+}
