@@ -1,6 +1,7 @@
 import { App, Editor, Plugin } from "obsidian";
 import { WeeklySummaryPanel } from "./components/WeeklySummaryPanel";
 import { TextAnalysisPanel } from "./components/TextAnalysisPanel";
+import { AskAIPanel } from "./components/AskAIPanel";
 	
 export default class CursorPlugin extends Plugin {
 	async onload() {
@@ -25,6 +26,22 @@ export default class CursorPlugin extends Plugin {
 			editorCallback: (editor: Editor) => {
 				const selection = editor.getSelection();
 				new TextAnalysisPanel(
+					this.app,
+					{
+						selectedText: selection,
+						editor: editor,
+						onClose: () => {}
+					}
+				).show();
+			},
+		});
+
+		this.addCommand({
+			id: "ask-ai",
+			name: "Ask AI",
+			editorCallback: (editor: Editor) => {
+				const selection = editor.getSelection();
+				new AskAIPanel(
 					this.app,
 					{
 						selectedText: selection,

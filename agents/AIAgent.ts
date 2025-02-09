@@ -24,6 +24,11 @@ export class AIAgent {
         return await this.apiService.getCompletion(prompt);
     }
 
+    async askAI(original: string, question: string): Promise<string> {
+        const prompt = this.createQuestionPrompt(original, question);
+        return await this.apiService.getCompletion(prompt);
+    }
+
     private createWeeklySummaryPrompt(text: string): string {
         const languagePrompt = this.getLanguagePrompt();
 
@@ -81,6 +86,20 @@ ${original}
 ${suggestions}
 
 修改后的文本：`;
+    }
+
+    private createQuestionPrompt(original: string, question: string): string {
+        return `请基于以下文本回答问题：
+${original}
+
+问题：${question}
+
+要求：
+1. 答案需结构化分点说明
+2. 包含具体示例（如适用）
+3. 使用与问题相同的语言回答
+
+回答：`;
     }
 
     private getLanguagePrompt(): string {
