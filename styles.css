@@ -654,11 +654,10 @@ If your plugin does not need CSS, delete this file.
 }
 
 .split-container {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    height: calc(100% - 41px);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: calc(100% - 40px); /* 给头部留出空间 */
 }
 
 .editor-container, 
@@ -674,8 +673,16 @@ If your plugin does not need CSS, delete this file.
     box-sizing: border-box;
 }
 
-.console-output {
+.console-output, .dataview-output {
+    /* 添加滚动条样式 */
+    overflow-y: auto;
+    max-height: 300px;
     padding: 12px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    margin-top: 10px;
+    background: var(--background-primary);
+    box-sizing: border-box; /* 防止内容溢出 */
 }
 
 .code-editor {
@@ -706,5 +713,9 @@ If your plugin does not need CSS, delete this file.
     
     .code-editor {
         font-size: 12px;
+    }
+
+    .console-output, .dataview-output {
+        max-height: 200px;
     }
 }
