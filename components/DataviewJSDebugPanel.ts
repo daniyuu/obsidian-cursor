@@ -51,16 +51,29 @@ export class DataviewJSDebugPanel extends Component {
             timeout = window.setTimeout(() => {
                 try {
                     const logs: string[] = [];
-                    const originalLog = console.log;
-                    console.log = (...args) => {
-                        logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '));
-                        originalLog(...args);
-                    };
                     
+                    // 保存原始控制台方法
+                    const originalConsole = {
+                        log: console.log,
+                        info: console.info,
+                        warn: console.warn,
+                        error: console.error
+                    };
+
+                    // 劫持所有控制台方法
+                    ['log', 'info', 'warn', 'error'].forEach(method => {
+                        (console as any)[method] = (...args: any[]) => {
+                            logs.push(`[${method.toUpperCase()}] ${args.join(' ')}`);
+                            originalConsole[method as keyof typeof originalConsole](...args);
+                        };
+                    });
+
                     // 执行代码
                     (new Function('dv', 'app', (editor as HTMLTextAreaElement).value))(null, this.app);
                     
-                    console.log = originalLog;
+                    // 恢复原始控制台方法
+                    Object.assign(console, originalConsole);
+                    
                     if (output) {
                         output.innerHTML = logs.join('\n');
                     }
