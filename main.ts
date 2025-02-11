@@ -2,6 +2,7 @@ import { App, Editor, Plugin } from "obsidian";
 import { WeeklySummaryPanel } from "./components/WeeklySummaryPanel";
 import { TextAnalysisPanel } from "./components/TextAnalysisPanel";
 import { AskAIPanel } from "./components/AskAIPanel";
+import { DataviewJSDebugPanel } from "./components/DataviewJSDebugPanel";
 	
 export default class CursorPlugin extends Plugin {
 	async onload() {
@@ -48,6 +49,17 @@ export default class CursorPlugin extends Plugin {
 						editor: editor,
 						onClose: () => {}
 					}
+				).show();
+			},
+		});
+
+		this.addCommand({
+			id: "debug-dataviewjs",
+			name: "Debug DataviewJS",
+			editorCallback: (editor: Editor) => {
+				new DataviewJSDebugPanel(
+					this.app,
+					{ onClose: () => {} }
 				).show();
 			},
 		});

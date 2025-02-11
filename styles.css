@@ -620,3 +620,93 @@ If your plugin does not need CSS, delete this file.
     color: var(--text-muted);
     pointer-events: none;
 }
+
+.dataview-debug-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 500px;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.debug-header {
+    padding: 12px 16px;
+    background: var(--background-secondary);
+    border-bottom: 1px solid var(--background-modifier-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.debug-header h3 {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-accent);
+}
+
+.split-container {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    height: calc(100% - 41px);
+}
+
+.editor-container, 
+.console-output {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.editor-container {
+    width: 100%;
+    padding: 12px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    box-sizing: border-box;
+}
+
+.console-output {
+    padding: 12px;
+}
+
+.code-editor {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    box-sizing: border-box;
+    font-family: var(--font-monospace);
+    font-size: 13px;
+    padding: 8px;
+    background: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    color: var(--text-normal);
+}
+
+.console-output {
+    font-family: var(--font-monospace);
+    font-size: 13px;
+    color: var(--text-normal);
+    white-space: pre-wrap;
+}
+
+/* 新增响应式布局 */
+@media (max-width: 800px) {
+    .dataview-debug-panel {
+        width: 95vw;
+        height: 90vh;
+    }
+    
+    .code-editor {
+        font-size: 12px;
+    }
+}
