@@ -29,6 +29,11 @@ export class AIAgent {
         return await this.apiService.getCompletion(prompt);
     }
 
+    async translateToEnglish(text: string): Promise<string> {
+        const prompt = this.createTranslationPrompt(text);
+        return await this.apiService.getCompletion(prompt);
+    }
+
     private createWeeklySummaryPrompt(text: string): string {
         const languagePrompt = this.getLanguagePrompt();
 
@@ -100,6 +105,17 @@ ${original}
 3. 使用与问题相同的语言回答
 
 回答：`;
+    }
+
+    private createTranslationPrompt(text: string): string {
+        return `Please translate the following text to concise English. 
+Keep the translation brief and to the point while preserving the original meaning.
+Do not add any explanations or notes.
+
+Text to translate:
+${text}
+
+Translation:`;
     }
 
     private getLanguagePrompt(): string {

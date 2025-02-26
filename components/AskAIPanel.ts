@@ -30,6 +30,7 @@ export class AskAIPanel extends Component {
             <div class="ai-container">
                 <div class="original-editor-container">
                     <button class="apply-button">✅ 应用修改</button>
+                    <button class="translate-button">🔄 翻译</button>
                     <textarea 
                         class="original-editor" 
                         spellcheck="false"
@@ -66,6 +67,10 @@ export class AskAIPanel extends Component {
         // 添加应用按钮事件
         const applyButton = panel.querySelector(".apply-button") as HTMLButtonElement;
         applyButton.addEventListener("click", () => this.applyChanges());
+
+        // 添加翻译按钮事件
+        const translateButton = panel.querySelector(".translate-button") as HTMLButtonElement;
+        translateButton.addEventListener("click", () => this.handleTranslate());
 
         return panel;
     }
@@ -117,6 +122,51 @@ export class AskAIPanel extends Component {
         this.options.editor.replaceSelection(modifiedText);
         new Notice("修改已应用");
         this.close();
+    }
+
+    private async handleTranslate() {
+        const responseArea = this.panel.querySelector<HTMLDivElement>(".ai-response");
+        const translateButton = this.panel.querySelector<HTMLButtonElement>(".translate-button");
+        const originalEditor = this.panel.querySelector<HTMLTextAreaElement>(".original-editor");
+        
+        // 确保使用最新的编辑器内容
+        if (originalEditor) {
+            this.options.selectedText = originalEditor.value;
+        }
+        
+        if (!responseArea || !translateButton || !this.options.selectedText.trim()) return;
+
+        // 保存原始内容用于错误处理
+        const originalContent = responseArea.innerHTML;
+        
+        translateButton.setAttribute("disabled", "true");
+        translateButton.textContent = "翻译中...";
+        responseArea.innerHTML = '<div class="loading-spinner"></div>';
+
+        try {
+            const translation = await this.aiAgent.translateToEnglish(
+                this.options.selectedText
+            );
+            
+            // 先清空内容再渲染
+            responseArea.innerHTML = '';
+            await MarkdownRenderer.render(
+                this.app,
+                translation,
+                responseArea,
+                "",
+                this
+            );
+            
+            // 渲染后保持可编辑状态
+            responseArea.setAttribute("contenteditable", "true");
+        } catch (error) {
+            new Notice("翻译请求失败，请重试");
+            responseArea.innerHTML = originalContent; // 恢复之前内容
+        } finally {
+            translateButton.removeAttribute("disabled");
+            translateButton.textContent = "🔄 翻译";
+        }
     }
 
     public show() {
